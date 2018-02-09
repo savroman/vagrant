@@ -63,7 +63,7 @@ Vagrant.configure("2") do |config|
 
   #Create VM name
   config.vm.provider "virtualbox" do |v|
-    v.name = "TMW_vm"
+    v.name = "BT_vm"
   end
 
   #
