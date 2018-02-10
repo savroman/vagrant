@@ -18,6 +18,8 @@ TP=$(grep 'temporary password' /var/log/mysqld.log|cut -d ":" -f 4|cut -d ' ' -f
 
 #writing mysql root pass into file
 sudo echo $TP>/opt/tp.txt
-
+UPASS=1a_ZaraZa@
+mysql -uroot -p$(echo $TP) -e "CREATE USER 'ivan'@'localhost' IDENTIFIED BY '$UPASS';" 2>>$LOG
+mysql -uroot -p$(echo $TP) -e "GRANT ALL ON bugtrckr.* TO 'ivan'@'localhost';" 2>>$LOG
 #додати заміну пароля
 #https://www.howtoforge.com/tutorial/how-to-install-mysql-57-on-linux-centos-and-ubuntu/
