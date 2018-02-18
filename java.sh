@@ -1,6 +1,6 @@
 #!/bin/bash
-#sudo yum install wget -y
 
+###### GET INSTALLATION URLs ######
 # -- create log file --
 LOG=/var/log/vagrant/java.log
 
@@ -18,72 +18,128 @@ MVN_URL="http://apache.ip-connect.vn.ua/maven/maven-3/3.5.2/binaries/apache-mave
 # -- Insert Tomcat URL --
 # 1. Visit https://tomcat.apache.org/download-70.cgi
 # 2. Put link of your version "apache-maven-3*.tar.gz" to MVN_URL
-TOM_URL="http://www-us.apache.org/dist/tomcat/tomcat-7/v7.0.84/bin/apache-tomcat-7.0.84.tar.gz"
+TOM_URL="http://apache.volia.net/tomcat/tomcat-7/v7.0.85/bin/apache-tomcat-7.0.85.tar.gz"
 
+# Directory there maven, tomcat, and application installed
+HOME_DIR=/home/vagrant
+
+###############################
 ###### JAVA INSTALLATION ######
-wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$JDK_URL" 2>$LOG
+###############################
 
-# -- Edit app.sh file --
-JDK_LOCATION=/usr/local/java/jdk1.8.0_161 # знаходити автоматом
-VAR_FILE=/etc/profile.d/app.sh
-export JAVA_HOME=$JDK_LOCATION
-export JRE_HOME=$JDK_LOCATION/jre
-export PATH=$PATH:$JDK_LOCATION/bin:$JDK_LOCATION/jre/bin
+# -- Check if Java is already installed
+JAVA_CHECK=$(java -version 2>&1)
+if [[ "$JAVA_CHECK" == "java version \"1.8.0"* ]]; then
+  echo "Java is successfully installed!" 1>>$LOG
+else
+  # -- Java installation --
+  wget --no-cookies --no-check-certificate --header "Cookie: gpw_e24=http%3A%2F%2Fwww.oracle.com%2F; oraclelicense=accept-securebackup-cookie" "$JDK_URL" 2>$LOG
 
-cat >> $VAR_FILE <<EOF
+  # --Add Veriables and Edit app.sh file --
+  JDK_LOCATION=/usr/local/java/jdk1.8.0_161 # знаходити автоматом
+  export JAVA_HOME=$JDK_LOCATION
+  export JRE_HOME=$JDK_LOCATION/jre
+  export PATH=$PATH:$JDK_LOCATION/bin:$JDK_LOCATION/jre/bin
+
+  VAR_FILE=/etc/profile.d/app.sh
+  cat >> $VAR_FILE <<EOF
 export JAVA_HOME=$JDK_LOCATION
 export JRE_HOME=$JDK_LOCATION/jre
 export PATH=$PATH:$JDK_LOCATION/bin:$JDK_LOCATION/jre/bin
 EOF
-#
 
-# -- install java --
-sudo rpm -ihv --prefix=/usr/local/java  ${JDK_URL##*/} 2>>$LOG # треба видалити архів
+  # -- install java --
+  sudo rpm -ihv --prefix=/usr/local/java  ${JDK_URL##*/} 2>>$LOG # треба видалити архів
+  #sudo rm -r  2>>$LOG
 
-# -- Check JAVA Instalation --
-JAVA_CHECK=`java -version`
-if [[ "$JAVA_CHECK" == *"Java(TM) SE Runtime Environment"* ]]; then
-   echo "Java is successfully installed!" 2>>$LOG
-else
-   echo "Java installation failed!" 2>>$LOG
+  # -- Check JAVA Instalation --
+  if [[ "$JAVA_CHECK" == "java version \"1.8.0"* ]]; then
+    echo "Java is successfully installed!" 1>>$LOG
+  else
+    echo "Java installation failed!" 1>>$LOG
+  fi
 fi
 
+###############################
 ###### MAVEN INSTALATION ######
-MVN=${MVN_URL##*/}
-MVN_LOCATION=/usr/local/
-cd $MVN_LOCATION
-wget "$MVN_URL"
+###############################
 
-
-tar xzvf $MVN 2>>$LOG # треба видалити архів
-export MAVEN_HOME=$MVN_LOCATION${MVN%-bin.tar.gz}
-export PATH=$PATH:$MVN_LOCATION${MVN%-bin.tar.gz}/bin
-
-# -- Edit app.sh file --
-cat >> $VAR_FILE <<EOF
-export MAVEN_HOME=$MVN_LOCATION${MVN%-bin.tar.gz}
-export PATH=$PATH:$MVN_LOCATION${MVN%-bin.tar.gz}/bin
-EOF
-
+# -- Check if Maven is installed
 MVN_CHECK=`mvn -v`
-if [[ "$MVN_CHECK" == *"Apache Maven"* ]]; then
-   echo "Maven is successfully installed!" 2>>$LOG
+if [[ "$MVN_CHECK" == *"Apache Maven 3.5"* ]]; then
+  echo "Maven is successfully installed!" 1>>$LOG
 else
-   echo "MAven installation failed!" 2>>$LOG
+  MVN=${MVN_URL##*/}
+  cd $HOME_DIR
+  wget "$MVN_URL" -P $HOME_DIR/
+  tar xzvf $MVN 2>>$LOG # треба видалити архів
+
+  # -- Edit Veriables app.sh file --
+  export MAVEN_HOME=$HOME_DIR/${MVN%-bin.tar.gz}
+  export PATH=$PATH:$HOME_DIR/${MVN%-bin.tar.gz}/bin
+  cat >> $VAR_FILE <<EOF
+    export MAVEN_HOME=$HOME_DIR/${MVN%-bin.tar.gz}
+    export PATH=$PATH:$HOME_DIR/${MVN%-bin.tar.gz}/bin
+EOF
+  if [[ "$MVN_CHECK" == *"Apache Maven 3.5"* ]]; then
+    echo "Maven is successfully installed!" 1>>$LOG
+    # rm -f $MVN
+  else
+    echo "Maven installation failed!" 1>>$LOG
+  fi
 fi
 
+################################
 ###### TOMCAT INSTALATION ######
-TOM=${TOM_URL##*/}
-TOM_LOCATION=/usr/local/
-cd $TOM_LOCATION
-wget "$TOM_URL"
+################################
 
+#TODO Додати перевірку встановлення томкату
+TOM_CHECK=`echo $CATALINA_HOME`
+if [[ "$TOM_CHECK" == *"tomcat-7"* ]]; then
+  echo "Tomcat is successfully installed!" 1>>$LOG
+else
+  TOM=${TOM_URL##*/}
+  cd $HOME_DIR
+  wget "$TOM_URL" -P $HOME_DIR/
 
-tar xzvf $TOM 2>>$LOG # треба видалити архів
-export CATALINA_HOME=$TOM_LOCATION${TOM%.tar.gz}
-# -- Edit app.sh file --
-cat >> $VAR_FILE <<EOF
-export CATALINA_HOME=$TOM_LOCATION${TOM%.tar.gz}
+  tar xzvf $TOM 2>>$LOG # треба видалити архів
+  export CATALINA_HOME=$HOME_DIR/${TOM%.tar.gz}
+  # -- Edit app.sh file --
+  cat >> $VAR_FILE <<EOF
+export CATALINA_HOME=$HOME_DIR/${TOM%.tar.gz}
 EOF
+# -- open ports for tomcat
+sudo iptables -A INPUT -p tcp -m tcp --dport 8080 -j ACCEPT
+sudo sed -i 's/IPTABLES_SAVE_ON_STOP=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /etc/sysconfig/iptables-config
+sudo sed -i 's/IPTABLES_SAVE_ON_RESTART=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /etc/sysconfig/iptables-config
+fi
 
-# Додати перевірку встановлення томкату
+################################
+###### BUILD APPLICATION #######
+################################
+
+#TODO -- get application ---
+cd $HOME_DIR
+git clone https://github.com/IF-066-Java/bugTrckr.git
+
+APP_CONF=/home/vagrant/bugTrckr/src/main/resources/application.properties
+sed -i 's/jdbc.username=root/jdbc.username=ivan/' $APP_CONF 2>>$LOG
+sed -i 's/jdbc.password=root/jdbc.password=1a_ZaraZa@/' $APP_CONF 2>>$LOG # bed idea
+sed -i 's/localhost/192.168.56.101/' $APP_CONF 2>>$LOG
+
+DB_CONF=/home/vagrant/bugTrckr/src/main/resources/sql_maven_plugin.properties
+sed -i 's/drop-database=true/drop-database=false/' $DB_CONF 2>>$LOG
+sed -i 's/create-database=true/create-database==false/' $DB_CONF 2>>$LOG
+sed -i 's/create-tables=true/create-tables==false/' $DB_CONF 2>>$LOG
+sed -i 's/fill-in-the-tables=true/fill-in-the-tables=false/' $DB_CONF 2>>$LOG
+sed -i 's/localhost/192.168.56.101/' $DB_CONF 2>>$LOG
+
+#TODO -- create warfile --
+cd $HOME_DIR/bugTrckr
+mvn clean package
+
+cp $HOME_DIR/bugTrckr/target/*.war $HOME_DIR/${TOM%.tar.gz}/webapps
+cp /vagrant/tom*.xml $HOME_DIR/${TOM%.tar.gz}/conf
+
+# -- run tomcat
+$CATALINA_HOME/bin/startup.sh
