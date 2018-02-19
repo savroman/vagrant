@@ -94,8 +94,8 @@ fi
 #######################
 
 #TODO Додати перевірку встановлення томкату
-TC_CHECK=`echo $CATALINA_HOME`
-if [[ "$TC_CHECK" == *"TeamCity"* ]]; then
+TC_CHECK=$($HOME_DIR/TeamCity/bin/version.sh )
+if [[ "$TC_CHECK" == *"CATALINA_BASE"*"TeamCity"* ]]; then
   echo "TeamCity is successfully installed!" 1>>$LOG
 else
   TC=${TC_URL##*/}

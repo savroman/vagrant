@@ -7,12 +7,12 @@ Vagrant.configure("2") do |config|
     db.vm.box = "centos/7"
     db.vm.hostname = 'db'
     db.vm.network "private_network", ip: "192.168.56.101"
-    #web.vm.network :forwarded_port, guest: 22, host: 10122, id: "ssh"
+    # web.vm.network :forwarded_port, guest: 22, host: 10122, id: "ssh"
     # web.ssh.private_key_path = "/home/savr/.vagrant.d/insecure_private_key"
     # web.ssh.forward_agent = true
 
     db.vm.provider "virtualbox" do |vb|
-      vb.memory = "512"
+      vb.memory = "1024"
       vb.name = "DB_VM"
     end
 
@@ -28,11 +28,11 @@ Vagrant.configure("2") do |config|
     # db.ssh.forward_agent = true
 
     build.vm.provider "virtualbox" do |vb|
-      vb.memory = "512"
+      vb.memory = "2048"
       vb.name = "BLD_VM"
     end
 
-    build.vm.provision "shell",  path: "java.sh"
+    build.vm.provision "shell",  path: "build.sh"
   end
 
   config.vm.define "web" do |web|
@@ -44,8 +44,9 @@ Vagrant.configure("2") do |config|
     # db.ssh.forward_agent = true
 
     web.vm.provider "virtualbox" do |vb|
-      vb.memory = "512"
+      vb.memory = "1024"
       vb.name = "WEB_VM"
+    db.vm.provision "shell",  path: "web.sh"
     end
   end
   config.vm.provision "shell",  path: "start.sh"
