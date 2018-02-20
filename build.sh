@@ -15,12 +15,12 @@ JDK_URL="http://download.oracle.com/otn-pub/java/jdk/8u161-b12/2f38c3b165be4555a
 # 2. Put link of your version "apache-maven-3*.tar.gz" to MVN_URL
 MVN_URL="http://apache.ip-connect.vn.ua/maven/maven-3/3.5.2/binaries/apache-maven-3.5.2-bin.tar.gz"
 
-# -- Insert Tomcat URL --
-# 1. Visit https://tomcat.apache.org/download-70.cgi
-# 2. Put link of your version "apache-maven-3*.tar.gz" to MVN_URL
+# -- Insert TeamCity URL --
+# 1. Visit
+# 2. Put link of your version "" to TC_URL
 TC_URL="https://download.jetbrains.com/teamcity/TeamCity-2017.2.2.tar.gz"
 
-# Directory there maven, tomcat, and application installed
+# Directory there maven, TeamCity/tomcat, and application installed
 HOME_DIR=/home/vagrant
 
 ###############################
@@ -50,7 +50,7 @@ EOF
 
   # -- install java --
   sudo rpm -ihv --prefix=/usr/local/java  ${JDK_URL##*/} 2>>$LOG # треба видалити архів
-  #sudo rm -r  2>>$LOG
+  #sudo rm -rf  2>>$LOG
 
   # -- Check JAVA Instalation --
   if [[ "$JAVA_CHECK" == "java version \"1.8.0"* ]]; then
@@ -94,7 +94,7 @@ fi
 #######################
 
 #TODO Додати перевірку встановлення томкату
-TC_CHECK=$($HOME_DIR/TeamCity/bin/version.sh )
+TC_CHECK=$($HOME_DIR/TeamCity/bin/version.sh)
 if [[ "$TC_CHECK" == *"CATALINA_BASE"*"TeamCity"* ]]; then
   echo "TeamCity is successfully installed!" 1>>$LOG
 else
@@ -115,6 +115,7 @@ sudo sed -i 's/IPTABLES_SAVE_ON_STOP=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /et
 sudo sed -i 's/IPTABLES_SAVE_ON_RESTART=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /etc/sysconfig/iptables-config
 fi
 
+sudo $HOME_DIR/$TC/bin/runAll.sh start
 ################################
 ###### BUILD APPLICATION #######
 ################################
@@ -126,18 +127,18 @@ git clone https://github.com/IF-066-Java/bugTrckr.git
 APP_CONF=/home/vagrant/bugTrckr/src/main/resources/application.properties
 sed -i 's/jdbc.username=root/jdbc.username=ivan/' $APP_CONF 2>>$LOG
 sed -i 's/jdbc.password=root/jdbc.password=1a_ZaraZa@/' $APP_CONF 2>>$LOG # bed idea
-sed -i 's/localhost/192.168.56.101/' $APP_CONF 2>>$LOG
+sed -i 's/localhost/192.168.56.202/' $APP_CONF 2>>$LOG
 
 DB_CONF=/home/vagrant/bugTrckr/src/main/resources/sql_maven_plugin.properties
 sed -i 's/drop-database=true/drop-database=false/' $DB_CONF 2>>$LOG
 sed -i 's/create-database=true/create-database==false/' $DB_CONF 2>>$LOG
 sed -i 's/create-tables=true/create-tables==false/' $DB_CONF 2>>$LOG
 sed -i 's/fill-in-the-tables=true/fill-in-the-tables=false/' $DB_CONF 2>>$LOG
-sed -i 's/localhost/192.168.56.101/' $DB_CONF 2>>$LOG
+sed -i 's/localhost/192.168.56.202/' $DB_CONF 2>>$LOG
 
 #TODO -- create warfile --
-#cd $HOME_DIR/bugTrckr
-#mvn clean package
+cd $HOME_DIR/bugTrckr
+mvn clean package
 
 #cp $HOME_DIR/bugTrckr/target/*.war $HOME_DIR/${TOM%.tar.gz}/webapps
 #cp /vagrant/tom*.xml $HOME_DIR/${TOM%.tar.gz}/conf

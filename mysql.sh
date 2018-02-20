@@ -33,11 +33,13 @@ else
   sudo echo $TP>/opt/tp.txt 2>>$LOG
   #TODO dodaty normalnu zaminu paroliv
   mysql -uroot -p$(echo $TP) -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '1qaz@WSX';" --connect-expired-password
+  sudo echo "bind-address=0.0.0.0">>/etc/my.cnf 2>>$LOG
 fi
 #TODO dodaty normalnu zaminu paroliv
 UPASS=1a_ZaraZa@
 mysql -uroot -p$(echo "1qaz@WSX") -e "CREATE DATABASE sonar DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;" 2>>$LOG
 mysql -uroot -p$(echo "1qaz@WSX") -e "GRANT ALL ON *.* TO 'ivan'@'%' IDENTIFIED BY '$UPASS';" 2>>$LOG
+mysql -uroot -p$(echo "1qaz@WSX") -e "GRANT ALL ON sonar.* TO 'sonarqube'@'%' IDENTIFIED BY 'J0benB0ben';" 2>>$LOG
 
 
 # -- open ports for aplications
@@ -45,4 +47,5 @@ sudo iptables -A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
 sudo sed -i 's/IPTABLES_SAVE_ON_STOP=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /etc/sysconfig/iptables-config
 sudo sed -i 's/IPTABLES_SAVE_ON_RESTART=\"no\"/IPTABLES_SAVE_ON_STOP=\"yes\"/g' /etc/sysconfig/iptables-config
 #https://www.howtoforge.com/tutorial/how-to-install-mysql-57-on-linux-centos-and-ubuntu/
+
 #$(echo $(cat /opt/tp.txt))
