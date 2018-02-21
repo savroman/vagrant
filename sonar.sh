@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#THX to O.Sapeliuk and Co 
+#THX to O.Sapeliuk and Co
 
 ###################################################
 #		Sonarqube   installation  script          #
@@ -10,7 +10,7 @@
 HOST_IP="192.168.56.150"
 SONAR_DB="sonar"
 SONAR_USR="sonarqube"
-SONAR_PASS="J0benB0ben"
+SONAR_PASS="J0ben_B0ben"
 DB_HOST="db.local"
 SONAR_VER="sonarqube-6.7.1"
 SONAR_HOME="/opt/sonar"

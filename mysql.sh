@@ -39,7 +39,7 @@ fi
 UPASS=1a_ZaraZa@
 mysql -uroot -p$(echo "1qaz@WSX") -e "CREATE DATABASE sonar DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;" 2>>$LOG
 mysql -uroot -p$(echo "1qaz@WSX") -e "GRANT ALL ON *.* TO 'ivan'@'%' IDENTIFIED BY '$UPASS';" 2>>$LOG
-mysql -uroot -p$(echo "1qaz@WSX") -e "GRANT ALL ON sonar.* TO 'sonarqube'@'%' IDENTIFIED BY 'J0benB0ben';" 2>>$LOG
+mysql -uroot -p$(echo "1qaz@WSX") -e "GRANT ALL ON sonar.* TO 'sonarqube'@'%' IDENTIFIED BY 'J0ben_B0ben';" 2>>$LOG
 
 
 # -- open ports for aplications

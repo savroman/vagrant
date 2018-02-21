@@ -127,14 +127,14 @@ git clone https://github.com/IF-066-Java/bugTrckr.git
 APP_CONF=/home/vagrant/bugTrckr/src/main/resources/application.properties
 sed -i 's/jdbc.username=root/jdbc.username=ivan/' $APP_CONF 2>>$LOG
 sed -i 's/jdbc.password=root/jdbc.password=1a_ZaraZa@/' $APP_CONF 2>>$LOG # bed idea
-sed -i 's/localhost/192.168.56.202/' $APP_CONF 2>>$LOG
+sed -i 's/localhost/192.168.56.150/' $APP_CONF 2>>$LOG
 
 DB_CONF=/home/vagrant/bugTrckr/src/main/resources/sql_maven_plugin.properties
 sed -i 's/drop-database=true/drop-database=false/' $DB_CONF 2>>$LOG
 sed -i 's/create-database=true/create-database==false/' $DB_CONF 2>>$LOG
 sed -i 's/create-tables=true/create-tables==false/' $DB_CONF 2>>$LOG
 sed -i 's/fill-in-the-tables=true/fill-in-the-tables=false/' $DB_CONF 2>>$LOG
-sed -i 's/localhost/192.168.56.202/' $DB_CONF 2>>$LOG
+sed -i 's/localhost/192.168.56.150/' $DB_CONF 2>>$LOG
 
 #TODO -- create warfile --
 cd $HOME_DIR/bugTrckr
